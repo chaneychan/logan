@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="me.ele.logan.admin.dao.ApiMethodDao">
+
+	<resultMap type="ApiMethod" id="apiMethodResultMap">
+		<result column="id" property="id" />
+        <result column="module_id" property="moduleId"/>
+        <result column="method_name" property="methodName"/>
+        <result column="biz_method_name" property="bizMethodName"/>
+        <result column="version" property="version"/>
+        <result column="status" property="status"/>
+        <result column="biz_conf" property="bizConf"/>
+        <result column="create_time" property="createTime"/>
+        <result column="creator" property="creator"/>
+        <result column="last_modified" property="lastModified"/>
+        <result column="modified_by" property="modifiedBy"/>
+        <result column="creator_id" property="creatorId"/>
+        <result column="biz_id" property="bizId"/>
+	</resultMap>
+
+	<sql id="apiMethodField">
+	      id,module_id,method_name,biz_method_name,version,status,biz_conf,create_time,creator,last_modified,modified_by,creator_id,biz_id
+ 	</sql>
+ 	
+ 	<sql id="apiMethodSelective">
+		select 
+		<include refid="apiMethodField"/>
+		from t_api_method 
+	</sql>
+	
+	
+	
+	<!-- 只有varchar char text类型 做 !='' 判断，生成代码时,其他类型时只做!=null 决断 0或fasle与空''是相同的，在mybatis中的动态语句中 -->
+	<sql id="apiMethodConditions"><!-- xml转义字符需要 <![CDATA[   ]]> 标签-->
+		<where>
+			<if test="moduleId != null "> AND module_id=#{moduleId} </if>
+			<if test="methodName != null  and methodName != '' "> AND method_name=#{methodName} </if>
+			<if test="bizMethodName != null  and bizMethodName != '' "> AND biz_method_name=#{bizMethodName} </if>
+			<if test="version != null  and version != '' "> AND version=#{version} </if>
+			<if test="status != null "> AND status=#{status} </if>
+			<if test="bizConf != null  and bizConf != '' "> AND biz_conf=#{bizConf} </if>
+			<if test="creator != null  and creator != '' "> AND creator=#{creator} </if>
+			<if test="modifiedBy != null  and modifiedBy != '' "> AND modified_by=#{modifiedBy} </if>
+			<if test="creatorId != null "> AND creator_id=#{creatorId} </if>
+			<if test="bizId != null "> AND biz_id=#{bizId} </if>
+		</where>
+ 	</sql>
+
+
+
+    <insert id="insert" parameterType="ApiMethod" useGeneratedKeys="true">
+        <selectKey resultType="long" keyProperty="id" order="AFTER">
+            SELECT LAST_INSERT_ID() AS id
+        </selectKey>
+        INSERT INTO t_api_method(
+				id,
+				module_id,
+				method_name,
+				biz_method_name,
+				version,
+				status,
+				biz_conf,
+				create_time,
+				creator,
+				last_modified,
+				modified_by,
+				creator_id,
+				biz_id
+		)values(
+				#{id},
+				#{moduleId},
+				#{methodName},
+				#{bizMethodName},
+				#{version},
+				#{status},
+				#{bizConf},
+				#{createTime},
+				#{creator},
+				#{lastModified},
+				#{modifiedBy},
+				#{creatorId},
+				#{bizId}
+		)
+    </insert>
+
+	<update id="update" parameterType="ApiMethodVo">
+		UPDATE t_api_method
+		SET
+					module_id = #{moduleId},
+					method_name = #{methodName},
+					biz_method_name = #{bizMethodName},
+					version = #{version},
+					status = #{status},
+					biz_conf = #{bizConf},
+					create_time = #{createTime},
+					creator = #{creator},
+					last_modified = #{lastModified},
+					modified_by = #{modifiedBy},
+					biz_id = #{bizId},
+		WHERE
+			id = #{id}
+	</update>
+
+	<!-- <select id="get" parameterType="java.lang.Long" resultMap="apiMethodResultMap">
+		<include refid="apiMethodSelective"/>
+		where id = #{id}
+	</select>
+	 -->
+	
+	<select id="get" parameterType="java.lang.Long" resultMap="apiMethodResultMap">
+		<include refid="apiMethodSelective"/>
+		where id = #{id}
+	</select>
+	
+	
+	
+	<select id="selectDynamic" resultMap="apiMethodResultMap" parameterType="me.ele.logan.admin.model.ApiMethod">
+	     SELECT
+	     	<include refid="apiMethodField" />
+		 FROM
+		 	t_api_method
+			<include refid="apiMethodConditions" />
+ 	</select>
+	<!-- 根据条件查询 -->
+	<select id="selectByBizId" resultMap="apiMethodResultMap"
+		parameterType="ApiMethodVo">
+		select
+		<include refid="apiMethodField" />
+		from t_api_method u
+		<include refid="apiMethodConditions" />
+	</select>
+	
+
+</mapper>

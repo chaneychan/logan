@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="me.ele.logan.admin.dao.UserMethodDao">
+
+	<resultMap type="UserMethod" id="userMethodResultMap">
+		<result column="id" property="id" />
+        <result column="user_id" property="userId"/>
+        <result column="method_id" property="methodId"/>
+        <result column="rate" property="rate"/>
+        <result column="status" property="status"/>
+        <result column="create_time" property="createTime"/>
+        <result column="creator" property="creator"/>
+        <result column="last_modified" property="lastModified"/>
+        <result column="modified_by" property="modifiedBy"/>
+        <result column="creator_id" property="creatorId"/>
+        <result column="method_name" property="methodName"/>
+        <result column="app_key" property="appKey"/>
+	</resultMap>
+
+	<sql id="userMethodField">
+	      id,user_id,app_key,method_id,method_name,rate,status,create_time,creator,last_modified,modified_by,creator_id
+ 	</sql>
+ 	
+ 	<sql id="userMethodSelective">
+		select 
+		<include refid="userMethodField"/>
+		from t_user_method
+	</sql>
+	
+	<select id="selectDynamic" resultMap="userMethodResultMap" parameterType="UserMethod">
+	     SELECT
+	     	<include refid="userMethodField" />
+		 FROM
+		 	t_user_method
+			<include refid="userMethodConditions" />
+ 	</select>
+	
+	
+	<!-- 只有varchar char text类型 做 !='' 判断，生成代码时,其他类型时只做!=null 决断 0或fasle与空''是相同的，在mybatis中的动态语句中 -->
+	<sql id="userMethodConditions"><!-- xml转义字符需要 <![CDATA[   ]]> 标签-->
+		<where>
+			<if test="userId != null "> AND user_id=#{userId} </if>
+			<if test="methodId != null "> AND method_id=#{methodId} </if>
+			<if test="rate != null "> AND rate=#{rate} </if>
+			<if test="status != null "> AND status=#{status} </if>
+			<if test="creator != null  and creator != '' "> AND creator=#{creator} </if>
+			<if test="modifiedBy != null  and modifiedBy != '' "> AND modified_by=#{modifiedBy} </if>
+			<if test="creatorId != null "> AND creator_id=#{creatorId} </if>
+			<if test="methodName != null "> AND method_name=#{methodName} </if>
+			<if test="appKey != null "> AND app_key=#{appKey} </if>
+		</where>
+ 	</sql>
+
+	
+
+    <insert id="insert" parameterType="UserMethod" useGeneratedKeys="true">
+        <selectKey resultType="long" keyProperty="id" order="AFTER">
+            SELECT LAST_INSERT_ID() AS id
+        </selectKey>
+        INSERT INTO t_user_method(
+				id,
+				user_id,
+				method_id,
+				rate,
+				status,
+				create_time,
+				creator,
+				last_modified,
+				modified_by,
+				creator_id,
+				method_name,
+				app_key
+		)values(
+				#{id},
+				#{userId},
+				#{methodId},
+				#{rate},
+				#{status},
+				#{createTime},
+				#{creator},
+				#{lastModified},
+				#{modifiedBy},
+				#{creatorId},
+				#{methodName},
+				#{appKey}
+		)
+    </insert>
+
+	<!-- <update id="update" parameterType="UserMethodVo">
+		UPDATE t_user_method
+		SET
+					user_id = #{userId},
+					method_id = #{methodId},
+					rate = #{rate},
+					status = #{status},
+					create_time = #{createTime},
+					creator = #{creator},
+					last_modified = #{lastModified},
+					modified_by = #{modifiedBy},
+					method_name = #{methodName},
+					app_key = #{apKey},
+		WHERE
+			id = #{id}
+	</update> -->
+
+	<select id="get" parameterType="java.lang.Long" resultMap="userMethodResultMap">
+		<include refid="userMethodSelective"/>
+		where id = #{id}
+	</select>
+	
+	
+</mapper>

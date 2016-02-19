@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="me.ele.logan.admin.dao.BizLogDao">
+
+	<resultMap type="BizLog" id="bizLogResultMap">
+		<result column="id" property="id" />
+        <result column="method" property="method"/>
+        <result column="version" property="version"/>
+        <result column="biz_code" property="bizCode"/>
+        <result column="type" property="type"/>
+        <result column="request_value" property="requestValue"/>
+        <result column="response_value" property="responseValue"/>
+        <result column="time" property="time"/>
+        <result column="biz_id" property="bizId"/>
+        <result column="module_id" property="moduleId"/>
+        <result column="create_time" property="createTime"/>
+        <result column="start_time" property="startTime"/>
+        <result column="end_time" property="endTime"/>
+        <result column="app_key" property="appKey"/>
+        <result column="client_ip" property="clientIp" />
+	</resultMap>
+
+	<sql id="bizLogField">
+	      id,method,version,biz_code,type,request_value,response_value,time,biz_id,module_id,create_time,start_time,end_time,app_key,client_ip
+ 	</sql>
+ 	
+ 	<sql id="bizLogSelective">
+		select
+		<include refid="bizLogField" />
+		from t_biz_log
+	</sql>
+	<!-- 只有varchar char text类型 做 !='' 判断，生成代码时,其他类型时只做!=null 决断 0或fasle与空''是相同的，在mybatis中的动态语句中 -->
+	<sql id="bizLogConditions"><!-- xml转义字符需要 <![CDATA[   ]]> 标签-->
+		<where>
+			<if test="method != null  and method != '' "> AND method=#{method} </if>
+			<if test="version != null  and version != '' "> AND version=#{version} </if>
+			<if test="bizCode != null  and bizCode != '' "> AND biz_code=#{bizCode} </if>
+			<if test="type != null "> AND type=#{type} </if>
+			<if test="requestValue != null  and requestValue != '' "> AND request_value=#{requestValue} </if>
+			<if test="responseValue != null  and responseValue != '' "> AND response_value=#{responseValue} </if>
+			<if test="time != null  and time != '' "> AND time=#{time} </if>
+			<if test="bizId != null "> AND biz_id=#{bizId} </if>
+			<if test="moduleId != null "> AND module_id=#{moduleId} </if>
+			<if test="startTime != null "> AND start_time=#{startTime} </if>
+			<if test="endTime != null "> AND end_time=#{endTime} </if>
+			<if test="clientIp != null "> AND client_ip=#{clientIp} </if>
+		</where>
+ 	</sql>
+ 	
+    <insert id="insert" parameterType="BizLog"  useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO t_biz_log(
+				id,
+				method,
+				version,
+				biz_code,
+				type,
+				request_value,
+				response_value,
+				time,
+				biz_id,
+				module_id,
+				create_time,
+				start_time,
+				end_time,app_key,client_ip
+		)values(
+				#{id},
+				#{method},
+				#{version},
+				#{bizCode},
+				#{type},
+				#{requestValue},
+				#{responseValue},
+				#{time},
+				#{bizId},
+				#{moduleId},
+				#{createTime},
+				#{startTime},
+				#{endTime},#{appKey},#{clientIp}
+		)
+    </insert>
+
+	<update id="update" parameterType="BizLogVo">
+		UPDATE t_biz_log
+		SET
+					method = #{method},
+					version = #{version},
+					biz_code = #{bizCode},
+					type = #{type},
+					request_value = #{requestValue},
+					response_value = #{responseValue},
+					time = #{time},
+					biz_id = #{bizId},
+		WHERE
+			id = #{id}
+	</update>
+
+
+
+
+</mapper>

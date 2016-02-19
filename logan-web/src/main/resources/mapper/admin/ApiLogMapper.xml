@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="me.ele.logan.admin.dao.ApiLogDao">
+
+	<resultMap type="ApiLog" id="apiLogResultMap">
+		<result column="id" property="id" />
+		<result column="app_key" property="appKey" />
+		<result column="method_name" property="methodName" />
+		<result column="version" property="version" />
+		<result column="type" property="type" />
+		<result column="create_time" property="createTime" />
+		<result column="time" property="time" />
+		<result column="client_ip" property="clientIp" />
+		<result column="request_value" property="requestValue" />
+		<result column="response_value" property="responseValue" />
+		<result column="biz_id" property="bizId"/>
+        <result column="module_id" property="moduleId"/>
+	    <result column="start_time" property="startTime"/>
+        <result column="end_time" property="endTime"/>
+	</resultMap>
+
+	<sql id="apiLogField">
+		id,app_key,method_name,version,type,create_time,time,client_ip,request_value,response_value,biz_id,module_id,start_time,end_time
+	</sql>
+
+	<sql id="apiLogSelective">
+		select
+		<include refid="apiLogFeild" />
+		from t_api_log
+	</sql>
+
+
+	<!-- 只有varchar char text类型 做 !='' 判断，生成代码时,其他类型时只做!=null 决断 0或fasle与空''是相同的，在mybatis中的动态语句中 -->
+	<sql id="apiLogConditions"><!-- xml转义字符需要 <![CDATA[ ]]> 标签 -->
+		<where>
+			<if test="appKey != null  and appKey != '' "> AND app_key=#{appKey} </if>
+			<if test="methodName != null  and methodName != '' "> AND method_name=#{methodName} </if>
+			<if test="version != null  and version != '' "> AND version=#{version} </if>
+			<if test="type != null "> AND type=#{type} </if>
+			<if test="time != null  and time != '' "> AND time=#{time} </if>
+			<if test="clientIp != null  and clientIp != '' "> AND client_ip=#{clientIp} </if>
+			<if test="requestValue != null  and requestValue != '' "> AND request_value=#{requestValue} </if>
+			<if test="responseValue != null  and responseValue != '' "> AND response_value=#{responseValue} </if>
+			<if test="bizId != null "> AND biz_id=#{bizId} </if>
+			<if test="moduleId != null "> AND module_id=#{moduleId} </if>
+			<if test="startTime != null "> AND start_time=#{startTime} </if>
+			<if test="endTime != null "> AND end_time=#{endTime} </if>
+		</where>
+	</sql>
+
+	<insert id="insert" parameterType="ApiLog" useGeneratedKeys="true" keyProperty="id">
+		INSERT INTO t_api_log(
+		id,
+		app_key,
+		method_name,
+		version,
+		type,
+		create_time,
+		time,
+		client_ip,
+		request_value,
+		response_value,
+		biz_id,
+		module_id,
+		start_time,
+		end_time
+		)values(
+		#{id},
+		#{appKey},
+		#{methodName},
+		#{version},
+		#{type},
+		#{createTime},
+		#{time},
+		#{clientIp},
+		#{requestValue},
+		#{responseValue},
+		#{bizId},
+		#{moduleId},
+		#{startTime},
+		#{endTime}
+		)
+	</insert>
+
+	<update id="update" parameterType="ApiLogVo">
+		UPDATE t_api_log
+		SET
+		app_key = #{appKey},
+		method_name = #{methodName},
+		version = #{version},
+		type = #{type},
+		create_time = #{createTime},
+		client_ip = #{clientIp},
+		request_value = #{requestValue},
+		response_value = #{responseValue}
+		WHERE
+		id = #{id}
+	</update>
+
+</mapper>

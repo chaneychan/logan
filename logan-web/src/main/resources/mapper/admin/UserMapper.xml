@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="me.ele.logan.admin.dao.UserDao">
+
+	<!-- Result Map -->
+	<resultMap type="User" id="userResultMap">
+		<result column="id" property="id" />
+        <result column="app_key" property="appKey"/>
+        <result column="secret_key" property="secretKey"/>
+        <result column="type" property="type"/>
+        <result column="description" property="description"/>
+        <result column="status" property="status"/>
+        <result column="name" property="name"/>
+        <result column="email" property="email"/>
+        <result column="address" property="address"/>
+        <result column="rate" property="rate"/>
+        <result column="create_time" property="createTime"/>
+        <result column="creator" property="creator"/>
+        <result column="last_modified" property="lastModified"/>
+        <result column="modified_by" property="modifiedBy"/>
+        <result column="creator_id" property="creatorId"/>
+	</resultMap>
+	
+
+	<sql id="userFeild">
+		   id,app_key,secret_key,type,description,status,name,email,address,rate,create_time,creator,last_modified,modified_by,creator_id
+ 	</sql>
+	
+	<sql id="userSelective">
+		select 
+		<include refid="userFeild"/>
+		from t_user 
+	</sql>
+	
+	
+	<!-- 只有varchar char text类型 做 !='' 判断，生成代码时,其他类型时只做!=null 决断 0或fasle与空''是相同的，在mybatis中的动态语句中 -->
+	<sql id="userConditions"><!-- xml转义字符需要 <![CDATA[   ]]> 标签-->
+		<where>
+			<if test="appKey != null  and appKey != '' "> AND app_key=#{appKey} </if>
+			<if test="secretKey != null  and secretKey != '' "> AND secret_key=#{secretKey} </if>
+			<if test="type != null "> AND type=#{type} </if>
+			<if test="description != null  and description != '' "> AND description=#{description} </if>
+			<if test="status != null "> AND status=#{status} </if>
+			<if test="name != null  and name != '' "> AND name=#{name} </if>
+			<if test="email != null  and email != '' "> AND email=#{email} </if>
+			<if test="address != null  and address != '' "> AND address=#{address} </if>
+			<if test="rate != null "> AND rate=#{rate} </if>
+			<if test="creator != null  and creator != '' "> AND creator=#{creator} </if>
+			<if test="modifiedBy != null  and modifiedBy != '' "> AND modified_by=#{modifiedBy} </if>
+			<if test="creatorId != null "> AND creator_id=#{creatorId} </if>
+		</where>
+ 	</sql>
+	
+	<!-- 插入记录 -->
+	<insert id="insertdfs" parameterType="User">
+		<selectKey resultType="long" keyProperty="id" order="AFTER">
+            SELECT LAST_INSERT_ID() AS id
+        </selectKey>
+        INSERT INTO t_user(
+				id,
+				app_key,
+				secret_key,
+				type,
+				description,
+				status,
+				name,
+				email,
+				address,
+				rate,
+				create_time,
+				creator,
+				last_modified,
+				modified_by,
+				creator_id
+		)values(
+				#{id},
+				#{appKey},
+				#{secretKey},
+				#{type},
+				#{description},
+				#{status},
+				#{name},
+				#{email},
+				#{address},
+				#{rate},
+				#{createTime},
+				#{creator},
+				#{lastModified},
+				#{modifiedBy},
+				#{creatorId}
+		)
+	</insert>
+	
+	
+	<update id="update" parameterType="UserVo">
+		UPDATE t_user
+		SET
+		            app_key = #{appKey},
+					secret_key = #{secretKey},
+					type = #{type},
+					description = #{description},
+					status = #{status},
+					name = #{name},
+					email = #{email},
+					address = #{address},
+					rate = #{rate},
+					last_modified = #{lastModified},
+					modified_by = #{modifiedBy},
+					creator_id = #{creatorId}
+		WHERE
+			id = #{id}
+	</update>
+	
+	
+	
+
+	<select id="get" parameterType="java.lang.Long" resultMap="userResultMap">
+		<include refid="userSelective"/>
+		where id = #{id}
+	</select>
+
+	<!-- <select id="findListByVo" parameterType="UserVo" resultMap="userResultMap">
+		<include refid="userSelective" />
+		<include refid="userConditions" />
+	</select> -->
+	
+	<select id="selectDynamic" resultMap="userResultMap" parameterType="me.ele.logan.admin.model.User">
+	     SELECT
+	     	<include refid="userFeild" />
+		 FROM
+		 	t_user
+			<include refid="userConditions" />
+ 	</select>
+
+</mapper>   

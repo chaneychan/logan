@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="me.ele.logan.admin.dao.AppKeyDao">
+
+	<resultMap type="AppKey" id="appKeyResultMap">
+		<id column="id" property="id" />
+        <result column="user_id" property="userId"/>
+        <result column="biz_id" property="bizId"/>
+        <result column="app_key" property="appKey"/>
+        <result column="app_secret" property="appSecret"/>
+        <result column="status" property="status"/>
+        <result column="rate" property="rate"/>
+        <result column="create_time" property="createTime"/>
+        <result column="creator" property="creator"/>
+        <result column="last_modified" property="lastModified"/>
+        <result column="modified_by" property="modifiedBy"/>
+        <result column="creator_id" property="creatorId"/>
+	</resultMap>
+
+	<sql id="appKeyField">
+	      id,user_id,biz_id,app_key,app_secret,status,rate,create_time,creator,last_modified,modified_by,creator_id
+ 	</sql>
+ 	
+ 	<sql id="appKeySelective">
+		select 
+		<include refid="appKeyField"/>
+		from t_app_key
+	</sql>
+	<!-- 只有varchar char text类型 做 !='' 判断，生成代码时,其他类型时只做!=null 决断 0或fasle与空''是相同的，在mybatis中的动态语句中 -->
+	<sql id="appKeyConditions"><!-- xml转义字符需要 <![CDATA[   ]]> 标签-->
+		<where>
+			<if test="userId != null "> AND user_id=#{userId} </if>
+			<if test="bizId != null "> AND biz_id=#{bizId} </if>
+			<if test="appKey != null  and appKey != '' "> AND app_key=#{appKey} </if>
+			<if test="appSecret != null  and appSecret != '' "> AND app_secret=#{appSecret} </if>
+			<if test="status != null "> AND status=#{status} </if>
+			<if test="rate != null "> AND rate=#{rate} </if>
+			<if test="creator != null  and creator != '' "> AND creator=#{creator} </if>
+			<if test="modifiedBy != null  and modifiedBy != '' "> AND modified_by=#{modifiedBy} </if>
+			<if test="creatorId != null "> AND creator_id=#{creatorId} </if>
+		</where>
+ 	</sql>
+
+	
+
+    <insert id="insert" parameterType="AppKey" useGeneratedKeys="true">
+        <selectKey resultType="long" keyProperty="id" order="AFTER">
+            SELECT LAST_INSERT_ID() AS id
+        </selectKey>
+        INSERT INTO t_app_key(
+				id,
+				user_id,
+				biz_id,
+				app_key,
+				app_secret,
+				status,
+				rate,
+				create_time,
+				creator,
+				last_modified,
+				modified_by,
+				creator_id
+		)values(
+				#{id},
+				#{userId},
+				#{bizId},
+				#{appKey},
+				#{appSecret},
+				#{status},
+				#{rate},
+				#{createTime},
+				#{creator},
+				#{lastModified},
+				#{modifiedBy},
+				#{creatorId}
+		)
+    </insert>
+    
+    
+    <select id="get" parameterType="java.lang.Long" resultMap="appKeyResultMap">
+		<include refid="appKeySelective"/>
+		where id = #{id}
+	</select>
+	
+	
+	<select id="selectDynamic" resultMap="appKeyResultMap" parameterType="AppKey">
+	     SELECT
+	     	<include refid="appKeyField" />
+		 FROM
+		 	t_app_key
+			<include refid="appKeyConditions" />
+ 	</select>
+ 	
+ 	<select id="selectByAppKey" resultMap="appKeyResultMap" parameterType="java.lang.String">
+	     SELECT
+	     	<include refid="appKeyField" />
+		 FROM
+		 	t_app_key
+		 WHERE app_key = #{appKey}	limit 1 
+ 	</select>
+ 	
+ 	
+</mapper>

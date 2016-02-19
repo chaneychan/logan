@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<config>
+	<pool id="data_pool">
+		<!-- 控制一个pool最多有多少个状态为idle(空闲的)的jedis实例 -->
+		<maxIdle>200</maxIdle>
+		<!-- 可用连接实例的最大数目，默认值为8 -->
+		<maxTotal>1024</maxTotal>
+		<!-- 等待可用连接的最大时间，单位毫秒，默认值为-1，表示永不超时 -->
+		<maxWait>3000</maxWait>
+		<!-- 在borrow一个jedis实例时，是否提前进行validate操作；如果为true，则得到的jedis实例均是可用的 -->
+		<testOnBorrow>1</testOnBorrow>
+		<!-- 在return给pool时，是否提前进行validate操作 -->
+		<testOnReturn>1</testOnReturn>
+		<!-- 服务器ip,端口，例如：127.0.0.1:6379 -->
+		<servers>
+			<server>192.168.80.31:6379</server>
+<!-- 			<server>192.168.80.32:6379</server> -->
+		</servers>
+	</pool>
+</config>
